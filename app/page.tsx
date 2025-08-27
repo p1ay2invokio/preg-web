@@ -1,103 +1,276 @@
+'use client'
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import toast, { Toaster } from 'react-hot-toast'
+import axios from 'axios'
+import { url_endpoint } from "@/config";
+import Liff, { liff } from '@line/liff'
+import { jwtDecode } from "jwt-decode";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  let navigate = useRouter()
+
+  let [lineProfile, setLineProfile] = useState(null)
+  let [loading, setLoading] = useState(true)
+
+  let [personal, setPersonal] = useState({
+    name: '',
+    age: '',
+    job: '',
+    graduation: '',
+    income: '',
+    genre: '',
+    marry: '',
+    pregage: '',
+    preghis: '',
+    abort: '',
+    line_userId: ''
+  })
+
+
+  const insertData = () => {
+    axios.post(`${url_endpoint}/personal_info`, {
+      ...personal
+    }).then((res) => {
+      console.log(res.data)
+      if (res.data.status == 200) {
+        if (res.data.message) {
+          toast.error(res.data.message)
+        } else {
+          localStorage.setItem('token', res.data.token)
+
+          toast.loading("กำลังตรวจสอบข้อมูลก่อนบันทึก", { duration: 1500 })
+
+          setTimeout(() => {
+            toast.success("บันทึกสำเร็จ")
+            navigate.push("/behave")
+          }, 1500)
+        }
+      }
+    })
+  }
+
+
+
+  const loginLine = async () => {
+    await Liff.init({ liffId: '2008005445-ZEXLAlbB' })
+
+    if (!Liff.isLoggedIn()) {
+      Liff.login()
+    } else {
+      const userId: any = await Liff.getProfile()
+      setLineProfile(userId)
+
+      axios.get(`${url_endpoint}/personal_detail/${userId.userId}`).then((res) => {
+        console.log("Come")
+        console.log(res.data)
+        if (res.data.token) {
+          localStorage.setItem('token', res.data.token)
+          navigate.push('/behave')
+        }
+      })
+
+      setPersonal({
+        ...personal,
+        line_userId: userId.userId
+      })
+      console.log(userId)
+    }
+  }
+
+  const fetchData = async () => {
+    setLoading(true)
+    await loginLine()
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+
+  if (loading) {
+    return null
+  }
+
+  // let [job, setJob] = useState({})
+
+  return (
+    <div className="flex justify-center items-center h-[100dvh] flex-col p-10">
+
+      <p className="mb-5 text-center">แบบสอบถามข้อมูลส่วนบุคคลของหญิงตั้งครรภ์ในการป้องกันภาวะโลหิตจาง</p>
+      <div className="grid grid-cols-2 gap-3">
+        <Input onChange={(e) => {
+          setPersonal({
+            ...personal,
+            name: e.target.value
+          })
+        }} className="w-full col-span-2" placeholder="ชื่อ-นามสกุล"></Input>
+        <Input onChange={(e) => {
+          setPersonal({
+            ...personal,
+            age: e.target.value
+          })
+        }} className="w-full col-span-2" placeholder="อายุ"></Input>
+        <Select onValueChange={(e) => {
+          setPersonal({
+            ...personal,
+            job: e
+          })
+        }}>
+          <SelectTrigger className="w-[100%]">
+            <SelectValue placeholder="อาชีพ"></SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="แม่บ้าน">แม่บ้าน</SelectItem>
+            <SelectItem value="รับราชการ/พนักงานราชการ">รับราชการ/พนักงานราชการ</SelectItem>
+            <SelectItem value="ค้าขาย/ธุรกิจ">ค้าขาย/ธุรกิจ</SelectItem>
+            <SelectItem value="นักเรียน/นักศึกษา">นักเรียน/นักศึกษา</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select onValueChange={(e) => {
+          setPersonal({
+            ...personal,
+            graduation: e
+          })
+        }}>
+          <SelectTrigger className="w-[100%]">
+            <SelectValue placeholder="ระดับการศึกษา"></SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="แม่บ้าน">แม่บ้าน</SelectItem>
+            <SelectItem value="ประถมศึกษา">ประถมศึกษา</SelectItem>
+            <SelectItem value="มัธยมศึกษา">มัธยมศึกษา</SelectItem>
+            <SelectItem value="ประกาศนียบัตร">ประกาศนียบัตร</SelectItem>
+            <SelectItem value="ปริญญาตรี">ปริญญาตรี</SelectItem>
+            <SelectItem value="สูงกว่าปริญญาตรี">สูงกว่าปริญญาตรี</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select onValueChange={(e) => {
+          setPersonal({
+            ...personal,
+            income: e
+          })
+        }}>
+          <SelectTrigger className="w-[100%]">
+            <SelectValue placeholder="รายได้ของครอบครัว (บาท/เดือน)"></SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="0-10,000 บาท/เดือน">0-10,000 บาท/เดือน</SelectItem>
+            <SelectItem value="10,001-20,000 บาท/เดือน">10,001-20,000 บาท/เดือน</SelectItem>
+            <SelectItem value="20,001-30,000 บาท/เดือน">20,001-30,000 บาท/เดือน</SelectItem>
+            <SelectItem value="30,001 บาทขึ้นไป">30,001 บาทขึ้นไป</SelectItem>
+          </SelectContent>
+        </Select>
+
+
+        <Select onValueChange={(e) => {
+          setPersonal({
+            ...personal,
+            genre: e
+          })
+        }}>
+          <SelectTrigger className="w-[100%]">
+            <SelectValue placeholder="ลักษณะครอบครัว"></SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ครอบครัวเดี่ยว (บิดา มารดาและบุตร)">ครอบครัวเดี่ยว (บิดา มารดาและบุตร)</SelectItem>
+            <SelectItem value="ครอบครัวขยาย (บิดา มารดา บุตรและญาติอื่นๆ)">ครอบครัวขยาย (บิดา มารดา บุตรและญาติอื่นๆ)</SelectItem>
+          </SelectContent>
+        </Select>
+
+
+        <Select onValueChange={(e) => {
+          setPersonal({
+            ...personal,
+            marry: e
+          })
+        }}>
+          <SelectTrigger className="w-[100%]">
+            <SelectValue placeholder="สถานภาพการสมรส"></SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="สมรส">สมรส</SelectItem>
+            <SelectItem value="หย่าร้าง">หย่าร้าง</SelectItem>
+            <SelectItem value="หม้าย">หม้าย</SelectItem>
+            <SelectItem value="แยกกันอยู่">แยกกันอยู่</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select onValueChange={(e) => {
+          setPersonal({
+            ...personal,
+            pregage: e
+          })
+        }}>
+          <SelectTrigger className="w-[100%]">
+            <SelectValue placeholder="อายุครรภ์"></SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="น้อยกว่าหรือเท่ากับ 12+6 สัปดาห์">น้อยกว่าหรือเท่ากับ 12+6 สัปดาห์</SelectItem>
+            <SelectItem value="13 สัปดาห์–27+6 สัปดาห์">13 สัปดาห์–27+6 สัปดาห์</SelectItem>
+            <SelectItem value="28 สัปดาห์ขึ้นไป">28 สัปดาห์ขึ้นไป</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select onValueChange={(e) => {
+          setPersonal({
+            ...personal,
+            preghis: e
+          })
+        }}>
+          <SelectTrigger className="w-[100%]">
+            <SelectValue placeholder="ประวัติการตั้งครรภ์"></SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ตั้งครรภ์ครั้งแรก">ตั้งครรภ์ครั้งแรก</SelectItem>
+            <SelectItem value="ครรภ์ที่ 2 ขึ้นไป">ครรภ์ที่ 2 ขึ้นไป</SelectItem>
+          </SelectContent>
+        </Select>
+
+
+        <Select onValueChange={(e) => {
+          setPersonal({
+            ...personal,
+            abort: e
+          })
+        }}>
+          <SelectTrigger className="w-[100%]">
+            <SelectValue placeholder="ท่านมีประวัติการแท้งบุตร"></SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ตั้งครรภ์ครั้งแรก">มี</SelectItem>
+            <SelectItem value="ครรภ์ที่ 2 ขึ้นไป">ไม่มี</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Button onClick={async () => {
+          let isCompleted = Object.values(personal).every(value => value != '')
+          console.log(isCompleted)
+          if (isCompleted) {
+            // Collect Data to db
+
+            insertData()
+
+            // navigate.push("/behave")
+          } else {
+            console.log(personal)
+            toast.error("กรุณากรอกข้อมูลให้ครบถ้วน!")
+          }
+        }} className="col-span-2">บันทึกข้อมูล</Button>
+      </div>
+
+      <Toaster position="bottom-center" />
     </div>
   );
 }

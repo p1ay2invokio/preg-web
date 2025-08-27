@@ -1,0 +1,1 @@
+export const url_endpoint = 'https://line.playapi.shop'
