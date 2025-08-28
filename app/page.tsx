@@ -246,7 +246,7 @@ export default function Home() {
           })
         }}>
           <SelectTrigger className="w-[100%]">
-            <SelectValue placeholder="ท่านมีประวัติการแท้งบุตร"></SelectValue>
+            <SelectValue placeholder="มีประวัติการแท้งบุตร"></SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="ตั้งครรภ์ครั้งแรก">มี</SelectItem>
