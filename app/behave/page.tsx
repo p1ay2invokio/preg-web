@@ -16,7 +16,7 @@ const CustomRadio = ({ value, index }: { value: string, index: number }) => {
     return (
         <div className="flex items-center space-x-2">
             <RadioGroupItem className="cursor-pointer" value={`${value}`} id={`${value}${index}`} />
-            <Label className="cursor-pointer" htmlFor={`${value}${index}`}>{value.split('-')[0]}</Label>
+            <Label className="cursor-pointer" htmlFor={`${value}${index}`}>{value.split(',')[0]}</Label>
         </div>
     )
 }
@@ -258,14 +258,14 @@ const Behave = () => {
                 userId: dat.id,
                 score: totalScore
             }).then((res) => {
-                navigate.push("/takemed")
+                window.location.reload()
             })
 
         }
     }
 
     let init = () => {
-        
+
         let token = localStorage.getItem("token")
 
         if (token) {
@@ -277,12 +277,12 @@ const Behave = () => {
                 console.log(res.data)
                 setBehave(res.data.user)
             })
-        }else{
+        } else {
             navigate.push("/")
         }
     }
 
-    let fetchData=async()=>{
+    let fetchData = async () => {
         setLoading(true)
         await init()
         setLoading(false)
@@ -292,7 +292,7 @@ const Behave = () => {
         fetchData()
     }, [])
 
-    if(loading){
+    if (loading) {
         return null
     }
 
@@ -305,11 +305,11 @@ const Behave = () => {
 
             <div className="flex gap-2 mt-2 mb-2">
                 <Button className="w-30" variant={'outline'} onClick={() => {
-                    navigate.push("/behave")
-                }}>พฤติกรรม</Button>
-                <Button className="w-30" variant={'outline'} onClick={() => {
                     navigate.push("/takemed")
                 }}>บันทึกการกินยา</Button>
+                <Button className="w-30" variant={'outline'} onClick={() => {
+                    navigate.push("/behave")
+                }}>พฤติกรรม</Button>
             </div>
 
             <p className="mb-3 w-80 text-center">แบบประเมินพฤติกรรมการดูแลตนเองเพื่อป้องกันภาวะโลหิตจาง สำหรับคุณแม่✨</p>
@@ -330,7 +330,7 @@ const Behave = () => {
                                 <RadioGroup onValueChange={(e) => {
 
 
-                                    let scored = Number(e.split('-')[1])
+                                    let scored = Number(e.split(',')[1])
 
                                     setAnswers({
                                         ...answers,
@@ -340,11 +340,11 @@ const Behave = () => {
                                         }
                                     })
                                 }}>
-                                    <CustomRadio value={`${item.ans1.title}-${item.ans1.point}`} index={index}></CustomRadio>
-                                    <CustomRadio value={`${item.ans2.title}-${item.ans2.point}`} index={index}></CustomRadio>
-                                    <CustomRadio value={`${item.ans3.title}-${item.ans3.point}`} index={index}></CustomRadio>
-                                    <CustomRadio value={`${item.ans4.title}-${item.ans4.point}`} index={index}></CustomRadio>
-                                    {item.ans5 ? <CustomRadio value={`${item.ans5.title}-${item.ans5.point}`} index={index}></CustomRadio> : null}
+                                    <CustomRadio value={`${item.ans1.title},${item.ans1.point}`} index={index}></CustomRadio>
+                                    <CustomRadio value={`${item.ans2.title},${item.ans2.point}`} index={index}></CustomRadio>
+                                    <CustomRadio value={`${item.ans3.title},${item.ans3.point}`} index={index}></CustomRadio>
+                                    <CustomRadio value={`${item.ans4.title},${item.ans4.point}`} index={index}></CustomRadio>
+                                    {item.ans5 ? <CustomRadio value={`${item.ans5.title},${item.ans5.point}`} index={index}></CustomRadio> : null}
                                 </RadioGroup>
                             </CardContent>
                         </Card>

@@ -35,7 +35,8 @@ const Takemed = () => {
             }).then((res) => {
                 console.log(res.data)
                 if(res.data.status == 200){
-                    window.location.reload()
+                    // window.location.reload()
+                    navigate.push("/behave")
                 }
             })
         }
@@ -83,11 +84,11 @@ const Takemed = () => {
 
             <div className="flex gap-2 mt-2 mb-2">
                 <Button className="w-30" variant={'outline'} onClick={() => {
-                    navigate.push("/behave")
-                }}>พฤติกรรม</Button>
-                <Button className="w-30" variant={'outline'} onClick={() => {
                     navigate.push("/takemed")
                 }}>บันทึกการกินยา</Button>
+                <Button className="w-30" variant={'outline'} onClick={() => {
+                    navigate.push("/behave")
+                }}>พฤติกรรม</Button>
             </div>
 
             <p>แบบบันทึกการกินยาสำหรับคุณแม่🤰</p>

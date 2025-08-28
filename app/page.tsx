@@ -51,7 +51,7 @@ export default function Home() {
 
           setTimeout(() => {
             toast.success("บันทึกสำเร็จ")
-            navigate.push("/behave")
+            navigate.push("/takemed")
           }, 1500)
         }
       }
@@ -74,7 +74,7 @@ export default function Home() {
         console.log(res.data)
         if (res.data.token) {
           localStorage.setItem('token', res.data.token)
-          navigate.push('/behave')
+          navigate.push('/takemed')
         }
       })
 
