@@ -61,28 +61,35 @@ export default function Home() {
 
 
   const loginLine = async () => {
-    await Liff.init({ liffId: '2008005445-ZEXLAlbB' })
 
-    if (!Liff.isLoggedIn()) {
-      Liff.login()
+    let token = localStorage.getItem("token")
+
+    if (token) {
+      navigate.push("/behave")
     } else {
-      const userId: any = await Liff.getProfile()
-      setLineProfile(userId)
+      await Liff.init({ liffId: '2008005445-ZEXLAlbB' })
 
-      axios.get(`${url_endpoint}/personal_detail/${userId.userId}`).then((res) => {
-        console.log("Come")
-        console.log(res.data)
-        if (res.data.token) {
-          localStorage.setItem('token', res.data.token)
-          navigate.push('/takemed')
-        }
-      })
+      if (!Liff.isLoggedIn()) {
+        Liff.login()
+      } else {
+        const userId: any = await Liff.getProfile()
+        setLineProfile(userId)
 
-      setPersonal({
-        ...personal,
-        line_userId: userId.userId
-      })
-      console.log(userId)
+        axios.get(`${url_endpoint}/personal_detail/${userId.userId}`).then((res) => {
+          console.log("Come")
+          console.log(res.data)
+          if (res.data.token) {
+            localStorage.setItem('token', res.data.token)
+            navigate.push('/takemed')
+          }
+        })
+
+        setPersonal({
+          ...personal,
+          line_userId: userId.userId
+        })
+        console.log(userId)
+      }
     }
   }
 
