@@ -65,7 +65,7 @@ export default function Home() {
     let token = localStorage.getItem("token")
 
     if (token) {
-      navigate.push("/behave")
+      navigate.push("/takemed")
     } else {
       await Liff.init({ liffId: '2008005445-ZEXLAlbB' })
 
