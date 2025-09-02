@@ -80,7 +80,8 @@ const Takemed = () => {
                     Swal.fire({
                         title: "ต้องการรีเซ็ตไอดี?",
                         confirmButtonText: "ยืนยัน",
-                        cancelButtonText: "ยกเลิก"
+                        cancelButtonText: "ยกเลิก",
+                        showCancelButton: true
                     }).then((res) => {
                         if (res.isConfirmed) {
                             axios.delete(`${url_endpoint}/del_user/${me.id}`).then((res) => {
@@ -91,6 +92,20 @@ const Takemed = () => {
                         }
                     })
                 }}>คุณ : {me ? me.name : null}</p>
+
+                <Button className="fixed top-2 right-2" onClick={() => {
+                    Swal.fire({
+                        title: "ออกจากระบบ?",
+                        confirmButtonText: "ยืนยัน",
+                        cancelButtonText: "ยกเลิก",
+                        showCancelButton: true
+                    }).then((res) => {
+                        if (res.isConfirmed) {
+                            localStorage.removeItem("token")
+                            window.location.reload()
+                        }
+                    })
+                }}>ออกจากระบบ</Button>
             </div>
 
 
