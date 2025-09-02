@@ -106,13 +106,13 @@ export default function Home() {
   }
 
   useEffect(() => {
-    // fetchData()
+    fetchData()
   }, [])
 
 
-  // if (loading) {
-  //   return null
-  // }
+  if (loading) {
+    return null
+  }
 
   // let [job, setJob] = useState({})
 
@@ -276,7 +276,7 @@ export default function Home() {
         }} className="w-full col-span-1" placeholder="เดือน"></Input>
 
 
-        <Select  onValueChange={(e) => {
+        <Select onValueChange={(e) => {
           setPersonal({
             ...personal,
             abort: e
