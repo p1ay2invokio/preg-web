@@ -32,7 +32,13 @@ export default function Home() {
     pregage: '',
     preghis: '',
     abort: '',
-    line_userId: ''
+    line_userId: '',
+    qtychild: '0',
+    lastchildyear: '0',
+    lastchildmonth: '0',
+    aborttimes: '0',
+    lastabortyear: '0',
+    lastabortmonth: '0'
   })
 
 
@@ -100,13 +106,13 @@ export default function Home() {
   }
 
   useEffect(() => {
-    fetchData()
+    // fetchData()
   }, [])
 
 
-  if (loading) {
-    return null
-  }
+  // if (loading) {
+  //   return null
+  // }
 
   // let [job, setJob] = useState({})
 
@@ -141,6 +147,7 @@ export default function Home() {
             <SelectItem value="รับราชการ/พนักงานราชการ">รับราชการ/พนักงานราชการ</SelectItem>
             <SelectItem value="ค้าขาย/ธุรกิจ">ค้าขาย/ธุรกิจ</SelectItem>
             <SelectItem value="นักเรียน/นักศึกษา">นักเรียน/นักศึกษา</SelectItem>
+            <SelectItem value="อื่นๆ">อื่นๆ</SelectItem>
           </SelectContent>
         </Select>
 
@@ -154,7 +161,7 @@ export default function Home() {
             <SelectValue placeholder="ระดับการศึกษา"></SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="แม่บ้าน">แม่บ้าน</SelectItem>
+            <SelectItem value="ไม่ได้รับการศึกษา">ไม่ได้รับการศึกษา</SelectItem>
             <SelectItem value="ประถมศึกษา">ประถมศึกษา</SelectItem>
             <SelectItem value="มัธยมศึกษา">มัธยมศึกษา</SelectItem>
             <SelectItem value="ประกาศนียบัตร">ประกาศนียบัตร</SelectItem>
@@ -236,7 +243,7 @@ export default function Home() {
             preghis: e
           })
         }}>
-          <SelectTrigger className="w-[100%]">
+          <SelectTrigger className="w-[100%] col-span-2">
             <SelectValue placeholder="ประวัติการตั้งครรภ์"></SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -245,21 +252,70 @@ export default function Home() {
           </SelectContent>
         </Select>
 
+        <Input onChange={(e) => {
+          setPersonal({
+            ...personal,
+            qtychild: e.target.value
+          })
+        }} className="w-full col-span-2" placeholder="จำนวนบุตรทั้งหมด(คน)"></Input>
 
-        <Select onValueChange={(e) => {
+        <p className="w-full col-span-2 text-center">บุตรคนสุดท้าย อายุ</p>
+
+        <Input onChange={(e) => {
+          setPersonal({
+            ...personal,
+            lastchildyear: e.target.value
+          })
+        }} className="w-full col-span-1" placeholder="ปี"></Input>
+
+        <Input onChange={(e) => {
+          setPersonal({
+            ...personal,
+            lastchildmonth: e.target.value
+          })
+        }} className="w-full col-span-1" placeholder="เดือน"></Input>
+
+
+        <Select  onValueChange={(e) => {
           setPersonal({
             ...personal,
             abort: e
           })
         }}>
-          <SelectTrigger className="w-[100%]">
+          <SelectTrigger className="w-[100%] col-span-2">
             <SelectValue placeholder="มีประวัติการแท้งบุตร"></SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ตั้งครรภ์ครั้งแรก">มี</SelectItem>
-            <SelectItem value="ครรภ์ที่ 2 ขึ้นไป">ไม่มี</SelectItem>
+            <SelectItem value="มี">มี</SelectItem>
+            <SelectItem value="ไม่มี">ไม่มี</SelectItem>
           </SelectContent>
         </Select>
+
+        {personal.abort == "มี" ? <>
+          {/* <p className="col-span-2 text-center">ข้อมูลเพิ่มเติมการแท้ง</p> */}
+          <Input onChange={(e) => {
+            setPersonal({
+              ...personal,
+              aborttimes: e.target.value
+            })
+          }} className="w-full col-span-2" placeholder="จำนวนครั้ง"></Input>
+
+          <p className="w-full col-span-2 text-center">แท้งครั้งล่าสุด</p>
+
+          <Input onChange={(e) => {
+            setPersonal({
+              ...personal,
+              lastabortyear: e.target.value
+            })
+          }} className="w-full col-span-1" placeholder="กี่ปี"></Input>
+
+          <Input onChange={(e) => {
+            setPersonal({
+              ...personal,
+              lastabortmonth: e.target.value
+            })
+          }} className="w-full col-span-1" placeholder="กี่เดือน"></Input>
+        </> : null}
 
         <Button onClick={async () => {
           let isCompleted = Object.values(personal).every(value => value != '')
