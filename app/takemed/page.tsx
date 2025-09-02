@@ -9,6 +9,7 @@ import { useEffect, useState } from "react"
 import { jwtDecode } from "jwt-decode"
 import toast, { Toaster } from "react-hot-toast"
 import { useRouter } from "next/navigation"
+import Swal from 'sweetalert2'
 
 const Takemed = () => {
 
@@ -34,7 +35,7 @@ const Takemed = () => {
                 userId: dat.id
             }).then((res) => {
                 console.log(res.data)
-                if(res.data.status == 200){
+                if (res.data.status == 200) {
                     // window.location.reload()
                     navigate.push("/behave")
                 }
@@ -43,7 +44,7 @@ const Takemed = () => {
 
     }
 
-    let init = async() => {
+    let init = async () => {
         let token = await localStorage.getItem("token")
 
         if (token) {
@@ -55,11 +56,11 @@ const Takemed = () => {
                 setDetailTake(res.data.user)
                 console.log(res.data)
             })
-        }else{
+        } else {
             navigate.push("/")
         }
     }
-    
+
 
     useEffect(() => {
         setLoading(true)
@@ -67,7 +68,7 @@ const Takemed = () => {
         setLoading(false)
     }, [])
 
-    if(loading){
+    if (loading) {
         return null
     }
 
@@ -75,7 +76,21 @@ const Takemed = () => {
         <div className="flex gap-3 justify-center items-center h-[100dvh] flex-col">
 
             <div className="">
-                <p>คุณ : {me ? me.name : null}</p>
+                <p onClick={() => {
+                    Swal.fire({
+                        title: "ต้องการรีเซ็ตไอดี?",
+                        confirmButtonText: "ยืนยัน",
+                        cancelButtonText: "ยกเลิก"
+                    }).then((res) => {
+                        if (res.isConfirmed) {
+                            axios.delete(`${url_endpoint}/del_user/${me.id}`).then((res) => {
+                                console.log(res.data)
+                                localStorage.removeItem("token")
+                                window.location.reload()
+                            })
+                        }
+                    })
+                }}>คุณ : {me ? me.name : null}</p>
             </div>
 
 

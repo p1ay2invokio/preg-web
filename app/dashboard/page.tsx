@@ -112,18 +112,22 @@ const Dashboard = () => {
                 <thead className="bg-gray-100">
                     <tr>
                         <td>ID</td>
-                        <td>Name</td>
-                        <td>Age</td>
-                        <td>Abort</td>
-                        <td>Genre</td>
-                        <td>Graduation</td>
-                        <td>Income</td>
-                        <td>Job</td>
-                        <td>Marry</td>
-                        <td>Pregage</td>
-                        <td>Preghis</td>
+                        <td>ชื่อ</td>
+                        <td>อายุ</td>
+                        <td>แท้ง</td>
+                        <td>ลักษณะครอบครัว</td>
+                        <td>การศึกษา</td>
+                        <td>รายได้</td>
+                        <td>อาชีพ</td>
+                        <td>แต่งงาน</td>
+                        <td>ลูกอายุ</td>
+                        <td>ประวัติการตั้งครร</td>
                         <td>Line_userId</td>
                         <td>Done_day</td>
+                        <td>จำนวนแท้ง</td>
+                        <td>แท้งล่าสุด</td>
+                        <td>ลูกล่าสุดอายุ</td>
+                        <td>จำนวนลูก</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -148,6 +152,10 @@ const Dashboard = () => {
                                 <td>{item.preghis}</td>
                                 <td>{item.line_userId}</td>
                                 <td>{item.done_day}</td>
+                                <td>{item.aborttimes ? item.aborttimes : '-'}</td>
+                                <td>{item.lastabortyear ? `${item.lastabortyear} ปี ${item.lastabortmonth} เดือน` : '-'}</td>
+                                <td>{item.lastchildyear ? `${item.lastchildyear} ปี ${item.lastchildmonth} เดือน` : '-'}</td>
+                                <td>{item.qtychild ? item.qtychild : '-'}</td>
                             </tr>
                         )
                     }) : null}
